@@ -84,12 +84,16 @@ var qnLib = require('qn');
         if (!image) {
             return callback(new Error('invalid image'));
         }
-
+        var aaa=image.name.replace("[","").replace("]","");
+        image.name=aaa;
+        winston.info(aaa);
         var type = image.url ? 'url' : 'file';
         if (type === 'file' && !image.path) {
             return callback(new Error('invalid image path'));
         }
-
+        if(image.size>50000){
+            winston.info("image size is "+image.size+" ,resize!");
+        }
         if (type === 'file') {
             qnClient.uploadFile(image.path, function(err, result) {
                 if (err) {
@@ -98,7 +102,7 @@ var qnLib = require('qn');
                 } else {
                     return callback(null, {
                         name: image.name,
-                        url: "//" + result.url
+                        url: "//" + result.url+(image.size>50000?"?imageView/2/w/500":"")
                     });
                 }
             });
